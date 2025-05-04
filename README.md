@@ -66,58 +66,48 @@ Follow these steps to run the simulation locally:
 
 ## Expected Output
 
-When you run the container, you should see output in your terminal similar to this (details will match the specific test cases):
-============================================
-STARTING JOB APPLICATION EMAIL PARSER SIMULATION
-Mock sheet initialized with headers
-SIM: Adding pre-existing application entries to mock sheet...
-SIM: Added pre-existing entry for TechCorp (Senior Developer)
-... (other pre-existing entries) ...
-SIM: Mock sheet now has 5 rows (including header).
-SIM: Creating test email threads...
-SIM: Created 5 test email threads in label "JobAppToProcess"
-=== RUNNING processJobApplicationEmails ===
-PROCESS: Pre-loaded data for 4 companies. Found 4 existing email IDs.
-PROCESS: Found 5 threads with label "JobAppToProcess".
-PROCESS: ----- Processing Email ID: newapp_acme_1 -----
-PROCESS: Subject: "Thank you for applying to Software Engineer at Acme Inc" From: recruiting@acme.com
-PROCESS: Parsed from Subject - Company: "Acme Inc", Title: "Software Engineer"
-PROCESS: NEW application entry identified for Company: "Acme Inc"
-SHEET: Appended row (new length 6): Processed Timestamp, ..., Acme Inc, Software Engineer, Applied, ..., Email Subject, ..., newapp_acme_1...
-PROCESS: ---> APPENDED New Row: P:Other, C:Acme Inc, T:Software Engineer, S:Applied, ID:newapp_acme_1
-PROCESS: Applying label changes for thread newapp_acme_1 (Email ID: newapp_acme_1)
-LABEL: Removed thread newapp_acme_1 from label "JobAppToProcess"
-THREAD newapp_acme_1: Removed label "JobAppToProcess"
-LABEL: Added thread newapp_acme_1 to label "TestAppToProcess"
-THREAD newapp_acme_1: Added label "TestAppToProcess"
-PROCESS: ----- Finished Email ID: newapp_acme_1 -----
-PROCESS: ----- Processing Email ID: update_techcorp_reject_1 -----
-PROCESS: Subject: "Update on your TechCorp application" From: hr@techcorp.com
-PROCESS: Parsed from Subject - Company: "TechCorp", Title: "N/A - Manual Review Needed"
-PROCESS: UPDATE identified for Company "TechCorp" (Found 1 matches). Targeting last entry at row: 2
-PROCESS: UPDATE determined new status from body: Rejected
-PROCESS: ---> UPDATED mockSheet Row 2: Status='Rejected', UpdateDate set, Email Info Updated.
-PROCESS: Applying label changes for thread update_techcorp_reject_1 (Email ID: update_techcorp_reject_1)
-... (similar processing logs for other emails) ...
-PROCESS: Finished processing run. Added 1 new entries, updated 4 existing entries.
-=== FINISHED processJobApplicationEmails ===
-=== SIMULATION RESULTS ===
-Final spreadsheet rows: 6
-Spreadsheet Data (Company | Title | Status | Email ID | Last Update Date):
-HEADERS: Processed Timestamp | Email Date | Platform | Company | Job Title | Status | Last Update Date | Email Subject | Email Link | Email ID
-ROW 2: TechCorp | Senior Developer | Rejected | update_techcorp_reject_1 | 4/29/2025
-ROW 3: Beta Corp | Data Analyst | Interview Scheduled | update_betacorp_interview_1 | 4/29/2025
-ROW 4: Gamma Inc | Backend Engineer | Assessment/Screening | update_gammainc_assess_1 | 4/29/2025
-ROW 5: Delta Solutions | Project Manager | Offer/Accepted | update_deltasol_offer_1 | 4/29/2025
-ROW 6: Acme Inc | Software Engineer | Applied | newapp_acme_1 |
-Final Label State:
-"JobAppToProcess" Threads: 0
-"TestAppToProcess" Threads: 5
-============================================
-SIMULATION COMPLETE
-===========================================
+When you run the container, the detailed processing logs will appear first. The **final summary output** showing the state of the mock spreadsheet and labels should look similar to this: 
 
-*(Note: Exact output dates and formatting might vary slightly)*
+## === SIMULATION RESULTS ===
+
+**Final spreadsheet rows:** 6
+
+**Spreadsheet Data:**
+
+| Company         | Job Title           | Status              | Email ID                  | Last Update Date |
+|-----------------|---------------------|-----------------------|---------------------------|------------------|
+| TechCorp        | Senior Developer    | Rejected            | update_techcorp_reject_1  | MM/DD/YYYY       |
+| Beta Corp       | Data Analyst        | Interview Scheduled | update_betacorp_interview_1 | MM/DD/YYYY       |
+| Gamma Inc       | Backend Engineer    | Assessment/Screening| update_gammainc_assess_1    | MM/DD/YYYY       |
+| Delta Solutions | Project Manager     | Offer/Accepted      | update_deltasol_offer_1    | MM/DD/YYYY       |
+| Acme Inc        | Software Engineer   | Applied             | newapp_acme_1             |                  |
+
+**Spreadsheet Headers:**
+
+`Processed Timestamp | Email Date | Platform | Company | Job Title | Status | Last Update Date | Email Subject | Email Link | Email ID`
+
+**Final Label State:**
+
+* "JobAppToProcess" Threads: 0
+* "TestAppToProcess" Threads: **5**
+
+
+**Explanation of Changes in the Output Table:**
+
+*   **Row 2-5 (Updates):**
+    *   The `Status` column now reflects the status determined by the corresponding *update* email (Rejected, Interview Scheduled, etc.).
+    *   The `Email ID` column now shows the ID of the *update* email (e.g., `update_techcorp_reject_1`) because that was the last email processed for that row.
+    *   The `Last Update Date` column shows `MM/DD/YYYY` (representing the date the simulation *processed* the update email), as the script updates this field during an update.
+*   **Row 6 (New Entry):**
+    *   This row is added for Acme Inc.
+    *   The `Status` is the default (`Applied`).
+    *   The `Email ID` is that of the *new* application email (`newapp_acme_1`).
+    *   The `Last Update Date` is initially blank for new entries according to the script logic.
+*   **Label State:**
+    *   `JobAppToProcess` should have 0 threads, as all test emails were successfully processed and moved.
+    *   `TestAppToProcess` (or your configured 'done' label) should have 5 threads, one for each processed test email.
+
+*(Note: The exact `MM/DD/YYYY` in the output will be the date the simulation script ran, reflecting the `processedTimestamp`)*
 
 ## Customizing Test Cases
 
@@ -149,8 +139,9 @@ COPY your_main_simulation_script.js ./
 # Specify the command to run on container start
 # !! IMPORTANT: Replace 'your_main_simulation_script.js' with the actual name of your main Node.js script file !!
 CMD [ "node", "your_main_simulation_script.js" ]
+```
 
-(Remember to replace your_main_simulation_script.js with the correct filename in the COPY and CMD lines above)
-License
+*(Remember to replace your_main_simulation_script.js with the correct filename in the COPY and CMD lines above).*
 
-MIT License
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
